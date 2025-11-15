@@ -23,5 +23,8 @@
     <ClInclude Include="generateM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="valuce.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
