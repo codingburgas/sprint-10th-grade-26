@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.ipch
+*.db
+*.opendb
+*.suo
+*.user
+*.log
+x64/
+Debug/
+Release/
+
+# VS Code
+.vscode/
+
+# Compiled files
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.tlog
