@@ -6,21 +6,21 @@
 #include <vector>
 #include <stack>
 #include <algorithm>
-#include "valuce.h"
-#include "generateM.h"
+#include "../../hearers/valuce.h"
+#include "../../hearers/generateM.h"
 
 using namespace std;
 
 int main()
 {
-cout << " ____        _       ______                   " << endl;
-cout << "|  _ \      | |     |  ____|                  " << endl;
-cout << "| |_) |_   _| |_ ___| |__ ___  _ __ __ _  ___ " << endl;
-cout << "|  _ <| | | | __/ _ \  __/ _ \| '__/ _` |/ _ \" << endl;
-cout << "| |_) | |_| | ||  __/ | | (_) | | | (_| |  __/"; << endl;
-cout << "|____/ \__, |\__\___|_|  \___/|_|  \__, |\___|; << endl;
-cout << "        __/ |                       __/ |     "; << endl;
-cout << "       /___/                       /___/      " << endl;
+cout << "  ___  _____ " << endl;
+cout << " |__ \\| ____|" << endl;  
+cout << "    ) | |__  " << endl;
+cout << "   / /|___ \\ " << endl;  
+cout << "  / /_ ___) |" << endl;
+cout << " |____|____/ " << endl;
+
+
 cout<<"1.Start" << endl;
 cout <<"2.rules" << endl;
 cout <<"3.exit" << endl;
