@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run C++ Game",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "${workspaceFolder}/src/main/game.exe",
+            "cwd": "${workspaceFolder}/src/main",
+            "preLaunchTask": "build"
+        }
+    ]
+}

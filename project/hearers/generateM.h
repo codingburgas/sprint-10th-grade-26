@@ -1,3 +1,4 @@
+#include <random>
 void GenerateMazeDFS(int Size, int M[][MAX_SIZE]) {
 
     for (int i = 0; i < Size; i++) {
@@ -26,7 +27,7 @@ void GenerateMazeDFS(int Size, int M[][MAX_SIZE]) {
 
 
         vector<int> directions = { 0, 1, 2, 3 };
-        random_shuffle(directions.begin(), directions.end());
+        shuffle(directions.begin(), directions.end(), default_random_engine());
 
         bool found = false;
         for (int dir : directions) {
