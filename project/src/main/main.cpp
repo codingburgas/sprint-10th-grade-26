@@ -6,8 +6,6 @@
 #include <vector>
 #include <stack>
 #include <algorithm>
-#include "../../hearers/valuce.h"
-#include "../../hearers/generateM.h"
 
 using namespace std;
 
@@ -28,12 +26,6 @@ int choice;
 cin >> choice;
 if(choice == 1){
     cout << "enter maze size: ";
-    cin >> mazeSize;
-
-
-    GenerateMazeDFS(mazeSize, maze);
-
-    drawGame(maze, playerX, playerY, mazeSize, showDeadEnds);
 }
 if(choice == 2){
     cout << "Rules of the Game:" << endl;
