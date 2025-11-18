@@ -1,42 +1,40 @@
 #include <iostream>
-#include <conio.h>
-#include <windows.h>
-#include <cstdlib>
-#include <ctime>
 #include <vector>
 #include <stack>
-#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <conio.h>
+#include <windows.h>
 
 using namespace std;
 
-int main()
-{
-cout << "  ___  _____ " << endl;
-cout << " |__ \\| ____|" << endl;  
-cout << "    ) | |__  " << endl;
-cout << "   / /|___ \\ " << endl;  
-cout << "  / /_ ___) |" << endl;
-cout << " |____|____/ " << endl;
+const int dx[] = { -1, 0, 1, 0 };
+const int dy[] = { 0, 1, 0, -1 };
 
+struct Player {
+    int x, y;
+};
 
-cout<<"1.Start" << endl;
-cout <<"2.rules" << endl;
-cout <<"3.exit" << endl;
-int choice;
-cin >> choice;
-if(choice == 1){
-    cout << "enter maze size: ";
-}
-if(choice == 2){
-    cout << "Rules of the Game:" << endl;
-    cout << "1.Rule one" << endl;
-    cout << "2.Rule two" << endl;
-    cout << "3.Rule three" << endl;
-}
-if (choice == 3){
-    exit(0);
-}
-    
+struct Goal {
+    int x, y;
+};
 
-    
+void setCursorPosition(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+void hideCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+
+bool canMove(const vector<vector<int>>& maze, int x, int y) {
+    return x >= 0 && x < maze.size() &&
+        y >= 0 && y < maze[0].size() &&
+        maze[x][y] == 0;
 }
