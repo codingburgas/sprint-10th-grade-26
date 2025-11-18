@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <stack>
 #include <cstdlib>
@@ -37,4 +37,116 @@ bool canMove(const vector<vector<int>>& maze, int x, int y) {
     return x >= 0 && x < maze.size() &&
         y >= 0 && y < maze[0].size() &&
         maze[x][y] == 0;
+}
+void placeGoalRandomly(Goal& goal, const vector<vector<int>>& maze, const Player& player) {
+    vector<pair<int, int>> validPositions;
+    for (int i = 0; i < maze.size(); i++) {
+        for (int j = 0; j < maze[i].size(); j++) {
+            if (maze[i][j] == 0 && !(i == player.x && j == player.y)) {
+                validPositions.push_back({ i, j });
+            }
+        }
+    }
+    if (!validPositions.empty()) {
+        int randomIndex = rand() % validPositions.size();
+        goal.x = validPositions[randomIndex].first;
+        goal.y = validPositions[randomIndex].second;
+    }
+}
+
+void generateMaze(vector<vector<int>>& maze, int size) {
+    maze.assign(size, vector<int>(size, 1));
+    stack<pair<int, int>> path;
+
+    int startX = 0, startY = 0;
+    maze[startX][startY] = 0;
+    path.push({ startX, startY });
+
+    while (!path.empty()) {
+        int x = path.top().first;
+        int y = path.top().second;
+
+        vector<int> directions;
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i] * 2;
+            int ny = y + dy[i] * 2;
+
+            if (nx >= 0 && nx < size && ny >= 0 && ny < size && maze[nx][ny] == 1) {
+                directions.push_back(i);
+            }
+        }
+
+        if (!directions.empty()) {
+            int dir = directions[rand() % directions.size()];
+            int nx = x + dx[dir] * 2;
+            int ny = y + dy[dir] * 2;
+
+            maze[x + dx[dir]][y + dy[dir]] = 0;
+            maze[nx][ny] = 0;
+
+            path.push({ nx, ny });
+        }
+        else {
+            path.pop();
+        }
+    }
+
+    maze[size - 1][size - 1] = 0;
+    if (size > 1) {
+        maze[size - 2][size - 1] = 0;
+        maze[size - 1][size - 2] = 0;
+    }
+}
+
+void drawInitialMaze(const vector<vector<int>>& maze, const Player& player, const Goal& goal, int collected) {
+    system("cls");
+    hideCursor();
+
+    cout << "\n  === MAZE GAME ===" << endl;
+    cout << "  Move: W/A/S/D | Collect 5 goals! | Press Q to quit" << endl;
+    cout << "  Collected: " << collected << "/5\n" << endl;
+
+    for (int i = 0; i < maze.size(); i++) {
+        cout << "  ";
+        for (int j = 0; j < maze[i].size(); j++) {
+            if (i == player.x && j == player.y) {
+                cout << "P ";
+            }
+            else if (i == goal.x && j == goal.y) {
+                cout << "X ";
+            }
+            else if (maze[i][j] == 1) {
+                cout << "██";
+            }
+            else {
+                cout << "  ";
+            }
+        }
+        cout << endl;
+    }
+
+    cout << "\n  Moves: 0" << endl;
+}
+
+void updateGoal(const Goal& goal, const vector<vector<int>>& maze) {
+    setCursorPosition(2 + goal.y * 2, 5 + goal.x);
+    cout << "X ";
+}
+
+void updatePlayer(const Player& oldPos, const Player& newPos, const Goal& goal, const vector<vector<int>>& maze) {
+    setCursorPosition(2 + oldPos.y * 2, 4 + oldPos.x);
+    if (oldPos.x == goal.x && oldPos.y == goal.y) {
+        cout << "X ";
+    }
+    else {
+        cout << "  ";
+    }
+
+    setCursorPosition(2 + newPos.y * 2, 4 + newPos.x);
+    cout << "P ";
+}
+
+void updateCollectedCounter(int collected, int mazeSize) {
+    setCursorPosition(13, 2);
+    cout << collected << "/5   ";
 }
