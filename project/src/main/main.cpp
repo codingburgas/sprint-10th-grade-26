@@ -19,25 +19,6 @@ struct Goal {
     int x, y;
 };
 
-void setCursorPosition(int x, int y) {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-
-void hideCursor() {
-    CONSOLE_CURSOR_INFO cursorInfo;
-    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-    cursorInfo.bVisible = false;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
-}
-
-bool canMove(const vector<vector<int>>& maze, int x, int y) {
-    return x >= 0 && x < maze.size() &&
-        y >= 0 && y < maze[0].size() &&
-        maze[x][y] == 0;
-}
 void placeGoalRandomly(Goal& goal, const vector<vector<int>>& maze, const Player& player) {
     vector<pair<int, int>> validPositions;
     for (int i = 0; i < maze.size(); i++) {
@@ -54,8 +35,27 @@ void placeGoalRandomly(Goal& goal, const vector<vector<int>>& maze, const Player
     }
 }
 
+void setCursorPosition(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void hideCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+    cursorInfo.bVisible = false;
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+}
+
 void generateMaze(vector<vector<int>>& maze, int size) {
     maze.assign(size, vector<int>(size, 1));
+
     stack<pair<int, int>> path;
 
     int startX = 0, startY = 0;
@@ -81,6 +81,7 @@ void generateMaze(vector<vector<int>>& maze, int size) {
             int nx = x + dx[dir] * 2;
             int ny = y + dy[dir] * 2;
 
+            // Carve the path AND the cell between
             maze[x + dx[dir]][y + dy[dir]] = 0;
             maze[nx][ny] = 0;
 
@@ -91,6 +92,7 @@ void generateMaze(vector<vector<int>>& maze, int size) {
         }
     }
 
+    // Ensure goal area is accessible
     maze[size - 1][size - 1] = 0;
     if (size > 1) {
         maze[size - 2][size - 1] = 0;
@@ -104,16 +106,21 @@ void drawInitialMaze(const vector<vector<int>>& maze, const Player& player, cons
 
     cout << "\n  === MAZE GAME ===" << endl;
     cout << "  Move: W/A/S/D | Collect 5 goals! | Press Q to quit" << endl;
-    cout << "  Collected: " << collected << "/5\n" << endl;
+    cout << "  Collected: " << collected << "/5" << endl;
+    cout << endl;
 
     for (int i = 0; i < maze.size(); i++) {
         cout << "  ";
         for (int j = 0; j < maze[i].size(); j++) {
             if (i == player.x && j == player.y) {
+                setColor(10); // Green for player
                 cout << "P ";
+                setColor(7); // Reset to white
             }
             else if (i == goal.x && j == goal.y) {
+                setColor(12); // Red for goal
                 cout << "X ";
+                setColor(7); // Reset to white
             }
             else if (maze[i][j] == 1) {
                 cout << "██";
@@ -125,31 +132,47 @@ void drawInitialMaze(const vector<vector<int>>& maze, const Player& player, cons
         cout << endl;
     }
 
-    cout << "\n  Moves: 0" << endl;
+
 }
 
 void updateGoal(const Goal& goal, const vector<vector<int>>& maze) {
     setCursorPosition(2 + goal.y * 2, 5 + goal.x);
+    setColor(12); // Red for goal
     cout << "X ";
+    setColor(7); // Reset to white
+    cout.flush();
 }
 
 void updatePlayer(const Player& oldPos, const Player& newPos, const Goal& goal, const vector<vector<int>>& maze) {
-    setCursorPosition(2 + oldPos.y * 2, 4 + oldPos.x);
+    // Clear old position
+    setCursorPosition(2 + oldPos.y * 2, 5 + oldPos.x);
     if (oldPos.x == goal.x && oldPos.y == goal.y) {
+        setColor(12); // Red for goal
         cout << "X ";
+        setColor(7); // Reset to white
     }
     else {
         cout << "  ";
     }
 
-    setCursorPosition(2 + newPos.y * 2, 4 + newPos.x);
+    // Draw new position
+    setCursorPosition(2 + newPos.y * 2, 5 + newPos.x);
+    setColor(10); // Green for player
     cout << "P ";
+    setColor(7); // Reset to white
+    cout.flush();
 }
 
 void updateCollectedCounter(int collected, int mazeSize) {
-    setCursorPosition(13, 2);
+    setCursorPosition(13, 3);
     cout << collected << "/5   ";
+    cout.flush();
 }
+
+bool canMove(const vector<vector<int>>& maze, int x, int y) {
+    return x >= 0 && x < maze.size() && y >= 0 && y < maze[0].size() && maze[x][y] == 0;
+}
+
 int main() {
     srand(time(0));
 
@@ -168,6 +191,7 @@ int main() {
     Player player = { 0, 0 };
     Goal goal = { 0, 0 };
 
+    // Place first goal randomly
     placeGoalRandomly(goal, maze, player);
 
     int moves = 0;
@@ -181,14 +205,15 @@ int main() {
             updateCollectedCounter(collected, size);
 
             if (collected >= 5) {
-                setCursorPosition(0, 7 + size);
-                cout << "\n  CONGRATULATIONS! You collected all 5 goals!" << endl;
+                setCursorPosition(0, 8 + size);
+                cout << "\n CONGRATULATIONS! You collected all 5 goals!" << endl;
                 cout << "  Total moves: " << moves << endl;
                 cout << "\n  Press any key to exit..." << endl;
                 _getch();
                 break;
             }
 
+            // Place new goal
             placeGoalRandomly(goal, maze, player);
             updateGoal(goal, maze);
         }
@@ -205,7 +230,7 @@ int main() {
         else if (input == 'a') newY--;
         else if (input == 'd') newY++;
         else if (input == 'q') {
-            setCursorPosition(0, 7 + size);
+            setCursorPosition(0, 8 + size);
             cout << "\n  Game quit. Thanks for playing!" << endl;
             break;
         }
@@ -219,6 +244,6 @@ int main() {
         }
     }
 
-    setCursorPosition(0, 10 + size);
+    setCursorPosition(0, 11 + size);
     return 0;
 }
