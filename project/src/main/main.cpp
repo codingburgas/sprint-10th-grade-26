@@ -150,3 +150,75 @@ void updateCollectedCounter(int collected, int mazeSize) {
     setCursorPosition(13, 2);
     cout << collected << "/5   ";
 }
+int main() {
+    srand(time(0));
+
+    int size;
+    cout << "Enter maze size (5-50): ";
+    cin >> size;
+
+    if (size < 5 || size > 50) {
+        cout << "Please enter a size between 5 and 50." << endl;
+        return 1;
+    }
+
+    vector<vector<int>> maze;
+    generateMaze(maze, size);
+
+    Player player = { 0, 0 };
+    Goal goal = { 0, 0 };
+
+    placeGoalRandomly(goal, maze, player);
+
+    int moves = 0;
+    int collected = 0;
+
+    drawInitialMaze(maze, player, goal, collected);
+
+    while (true) {
+        if (player.x == goal.x && player.y == goal.y) {
+            collected++;
+            updateCollectedCounter(collected, size);
+
+            if (collected >= 5) {
+                setCursorPosition(0, 7 + size);
+                cout << "\n  CONGRATULATIONS! You collected all 5 goals!" << endl;
+                cout << "  Total moves: " << moves << endl;
+                cout << "\n  Press any key to exit..." << endl;
+                _getch();
+                break;
+            }
+
+            placeGoalRandomly(goal, maze, player);
+            updateGoal(goal, maze);
+        }
+
+        char input = _getch();
+        input = tolower(input);
+
+        Player oldPos = player;
+        int newX = player.x;
+        int newY = player.y;
+
+        if (input == 'w') newX--;
+        else if (input == 's') newX++;
+        else if (input == 'a') newY--;
+        else if (input == 'd') newY++;
+        else if (input == 'q') {
+            setCursorPosition(0, 7 + size);
+            cout << "\n  Game quit. Thanks for playing!" << endl;
+            break;
+        }
+
+        if (canMove(maze, newX, newY)) {
+            player.x = newX;
+            player.y = newY;
+            moves++;
+
+            updatePlayer(oldPos, player, goal, maze);
+        }
+    }
+
+    setCursorPosition(0, 10 + size);
+    return 0;
+}
